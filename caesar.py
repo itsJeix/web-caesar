@@ -1,7 +1,7 @@
 def encrypt(text, rot):
     encrypted = ""
     for x in text:
-        rotated = rotate_character(x, rot)
+        rotated = rotate_character(x, int(rot))
         encrypted += rotated
     return encrypted
 

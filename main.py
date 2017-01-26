@@ -14,19 +14,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import webapp2
-import caesar
+import webapp2, caesar, cgi
+
+def build_page(textarea_content):
+    rot_label = "<label>Rotate by:</label>"
+    rot_input = "<input type='number' name='rotation'/>"
+    text_label = "<label>Please enter the message to be encoded: </label>"
+    text_area = "<textarea name='message'>" + textarea_content + "</textarea>"
+    submit = "<input type='submit'/>"
+    form = "<form method='post'>" + rot_label + rot_input + "<br>" + text_label + text_area + "<br>" + submit + "</form>"
+    header = "<h2>Web Caesar</h2>"
+    return header + form
+
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        message = "Hello, world!"
-        encrypted_message = caesar.encrypt(message, 13)
+        content = build_page("")
+        self.response.write(content)
 
-        text_area = "<textarea>" + encrypted_message + "</textarea>"
-        submit = "<input type='submit'/>"
-        form = "<form>" + text_area + "<br>" + submit + "</form>"
-
-        self.response.write(form)
+    def post(self):
+        message = self.request.get("message")
+        rotation = self.request.get("rotation")
+        encrypted_message = caesar.encrypt(message, rotation)
+        escaped_message = cgi.escape(encrypted_message)
+        content = build_page(escaped_message)
+        self.response.write(content)
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler)
